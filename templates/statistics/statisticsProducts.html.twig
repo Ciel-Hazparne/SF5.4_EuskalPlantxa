@@ -1,0 +1,101 @@
+{% extends 'base.html.twig' %}
+{% block title %}Statistiques Achats{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('css/home.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header">
+            <i class="icon-graph warning font-large-1 float-leftt"></i>
+            <div class="user-name">
+                <h3 class="mb-0 ml-3" style="margin-top: -32px;">Satistiques des Produits</h3>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="grey-bg container-fluid">
+                <section id="minimal-statistics">
+                    <div class="row">
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-3 col-sm-6 col-12">
+
+                        </div>
+                        <div style="width: 100%; background-color: #fff">
+                            <div id="chart"></div>
+                        </div>
+                        <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.28.2/dist/apexcharts.min.js"></script>
+                        <script>
+                            // Définition des options du graphique
+                            var options = {
+                                chart: {
+                                    type: 'bar', // Type de graphique : barres
+                                    height: 400 // Hauteur du graphique
+                                },
+                                series: [{
+                                    name: 'Nombre d\'achats', // Nom de la série de données
+                                    data: [{% for item in data %}{
+                                        'x': '{{ item.name }}', // Nom de l'élément
+                                        'y': {{ item.count }}}, // Nombre d'achats pour cet élément
+                                        {% endfor %}]
+                                }],
+                                xaxis: {
+                                    type: 'category', // Type de données sur l'axe x : catégorie
+                                    labels: {
+                                        rotate: -45, // Rotation des étiquettes de 45 degrés vers la gauche
+                                        offsetY: 0, // Décalage vertical des étiquettes
+                                        style: {
+                                            fontSize: '13px', // Taille de police des étiquettes
+                                            fontFamily: 'Helvetica, Arial, sans-serif' // Police de caractère des étiquettes
+                                        }
+                                    }
+                                },
+                                yaxis: {
+                                    title: {
+                                        text: 'Nombre d\'achats' // Titre de l'axe y
+                                    }
+                                },
+                                tooltip: {
+                                    y: {
+                                        formatter: function (val) {
+                                            return val + " achats"; // Formatage du texte du tooltip
+                                        }
+                                    }
+                                },
+                                colors: [
+                                    function ({dataPointIndex}) {
+
+                                        // Fonction pour définir la couleur de chaque barre
+                                        switch (dataPointIndex) {
+                                            case 0:
+                                                return '#008FFB' // Couleur de la première barre
+
+                                            case 1:
+                                                return '#00E396' // Couleur de la deuxieme barre
+
+                                            case 2:
+                                                return '#FEB019' // Couleur de la troisieme barre
+
+                                            default:
+                                                return '#FF4560'
+                                        }
+
+                                    }
+                                ]
+                            };
+
+                            // Création du graphique avec ApexCharts
+                            var chart = new ApexCharts(document.querySelector("#chart"), options);
+
+                            // Affichage du graphique
+                            chart.render();
+                        </script>
+                    </div>
+                </section>
+                <a class="btn btn-warning btn-md px-3"
+                   href="{{ path('statistics') }}">Retour</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

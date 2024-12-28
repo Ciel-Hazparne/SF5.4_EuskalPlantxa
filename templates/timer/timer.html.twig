@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Temps de cuisson{% endblock %}
+
+{% block database %}
+    {% include "database.php" %}
+{% endblock %}
+
+{% block body %}
+
+    <div class="card">
+        <div class="card-header">
+            <i class="fa fa-clock-o primary font-large-1 float-left"></i>
+            <h3>Temps de Cuisson</h3>
+        </div>
+        <div class="card-body">
+            <link rel="stylesheet" href="{{ asset('css/timer.css') }}">
+            <div class="grey-bg container-fluid">
+                <section id="minimal-statistics">
+                    <div class="row">
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-3 col-sm-6 col-12">
+                            <div id="del-countdown">
+                                <div id="clock">
+                                    <span class="hours"></span>
+                                    <span class="minutes"></span>
+                                    <span class="seconds"></span>
+                                </div>
+                                <div id="units">
+                                    <span>Heures</span>
+                                    <span>Minutes</span>
+                                    <span>Secondes</span>
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            function updateTimer(deadline) {
+                                var time = (deadline - new Date()) / (1000 * 60);
+                                return {
+                                    hours: Math.floor(time / 60),
+                                    minutes: Math.floor(time % 60),
+                                    seconds: Math.floor((time * 60) % 60),
+                                    total: time,
+                                };
+                            }
+
+                            function animateClock(span) {
+                                span.className = "turn";
+                                setTimeout(function () {
+                                    span.className = "";
+                                }, 1000);
+                            }
+
+                            function Timer(id, remainingTimeFromDB) {
+                                var hoursSpan = document.querySelector("#" + id + " .hours");
+                                var minutesSpan = document.querySelector("#" + id + " .minutes");
+                                var secondsSpan = document.querySelector("#" + id + " .seconds");
+
+                                function update() {
+                                    var timer = updateTimer(new Date(Date.now() + (remainingTimeFromDB * 60 * 1000)));
+                                    hoursSpan.innerHTML = ("0" + timer.hours).slice(-2);
+                                    minutesSpan.innerHTML = ("0" + timer.minutes).slice(-2);
+                                    secondsSpan.innerHTML = ("0" + timer.seconds).slice(-2);
+                                }
+
+                                // appeler updateTimer toutes les secondes
+                                setInterval(update, 1000);
+                                update();
+                            }
+
+                            // appel de la fonction startTimer avec la durée restante de cuisson
+                            Timer("del-countdown", {{ app.user.remaining_time }});
+                        </script>
+                    </div>
+                </section>
+                <a class="btn btn-primary btn-lg px-5"
+                   href="{{ path('account_index') }}">Retour</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
